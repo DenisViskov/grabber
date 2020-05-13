@@ -5,6 +5,10 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.quartz.JobBuilder.*;
@@ -20,12 +24,15 @@ import static org.quartz.SimpleScheduleBuilder.*;
  */
 public class AlertRabbit {
     public static void main(String[] args) throws IOException {
-        try (InputStream pr = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
-            Properties properties = new Properties();
-            properties.load(pr);
+        AlertRabbit alertRabbit = new AlertRabbit();
+        Properties properties = alertRabbit.getResultProperties();
+        try (Connection connection = alertRabbit.getDbConnection(properties)) {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
-            JobDetail job = newJob(Rabbit.class).build();
+            JobDataMap data = new JobDataMap(Map.of("connection", connection));
+            JobDetail job = newJob(Rabbit.class)
+                    .usingJobData(data)
+                    .build();
             SimpleScheduleBuilder times = simpleSchedule()
                     .withIntervalInSeconds(Integer.valueOf(properties.getProperty("rabbit.interval")))
                     .repeatForever();
@@ -34,9 +41,27 @@ public class AlertRabbit {
                     .withSchedule(times)
                     .build();
             scheduler.scheduleJob(job, trigger);
-        } catch (SchedulerException se) {
+        } catch (SchedulerException | ClassNotFoundException | SQLException se) {
             se.printStackTrace();
         }
+    }
+
+    private Properties getResultProperties() throws IOException {
+        Properties properties = new Properties();
+        try (InputStream inputStream = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException();
+        }
+        return properties;
+    }
+
+    private Connection getDbConnection(Properties properties) throws ClassNotFoundException, SQLException {
+        Class.forName(properties.getProperty("driver-class-name"));
+        return DriverManager.getConnection(properties.getProperty("url"),
+                properties.getProperty("username"),
+                properties.getProperty("password"));
     }
 
     /**
