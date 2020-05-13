@@ -12,7 +12,7 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 /**
- * Класс реализует ...
+ * Class is an example show how to works quartz scheduler
  *
  * @author Денис Висков
  * @version 1.0
@@ -39,7 +39,17 @@ public class AlertRabbit {
         }
     }
 
+    /**
+     * Inner static class for example show how to works scheduler
+     */
     public static class Rabbit implements Job {
+
+        /**
+         * Method execute our planner work
+         *
+         * @param context - context
+         * @throws JobExecutionException
+         */
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
             System.out.println("Rabbit runs here ...");
