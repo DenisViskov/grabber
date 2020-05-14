@@ -78,7 +78,7 @@ public class AlertRabbit {
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
             try (Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
-                 PreparedStatement statement = connection.prepareStatement("insert into(created) values (?)")) {
+                 PreparedStatement statement = connection.prepareStatement("insert into rabbit(created) values (?)")) {
                 statement.setDate(1, new Date(System.currentTimeMillis()));
                 statement.executeUpdate();
             } catch (SQLException throwables) {
