@@ -165,7 +165,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <db.url>jdbc:postgresql://localhost/tracker</db.url>
+                <db.url>jdbc:postgresql://localhost/grabber</db.url>
                 <db.username>${login_db}</db.username>
                 <db.password>${password_db}</db.password>
                 <db.driver>org.postgresql.Driver</db.driver>
