@@ -5,9 +5,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
 
@@ -26,10 +24,10 @@ public class AlertRabbit {
     public static void main(String[] args) throws IOException {
         AlertRabbit alertRabbit = new AlertRabbit();
         Properties properties = alertRabbit.getResultProperties();
-        try (Connection connection = alertRabbit.getDbConnection(properties)) {
+        try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
-            JobDataMap data = new JobDataMap(Map.of("connection", connection));
+            JobDataMap data = new JobDataMap(Map.of("connection", alertRabbit.getDbConnection(properties)));
             JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
                     .build();
@@ -41,7 +39,9 @@ public class AlertRabbit {
                     .withSchedule(times)
                     .build();
             scheduler.scheduleJob(job, trigger);
-        } catch (SchedulerException | ClassNotFoundException | SQLException se) {
+            Thread.sleep(10000);
+            scheduler.shutdown();
+        } catch (Exception se) {
             se.printStackTrace();
         }
     }
@@ -77,7 +77,13 @@ public class AlertRabbit {
          */
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
-            System.out.println("Rabbit runs here ...");
+            try (Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
+                 PreparedStatement statement = connection.prepareStatement("insert into(created) values (?)")) {
+                statement.setDate(1, new Date(System.currentTimeMillis()));
+                statement.executeUpdate();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 }
