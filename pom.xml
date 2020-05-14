@@ -11,6 +11,9 @@
     <properties>
         <login_db>postgres</login_db>
         <password_db>021292</password_db>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
