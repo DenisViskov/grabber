@@ -24,21 +24,9 @@ public class AlertRabbit {
     public static void main(String[] args) throws IOException {
         AlertRabbit alertRabbit = new AlertRabbit();
         Properties properties = alertRabbit.getResultProperties();
-        try {
-            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        try (Connection connection = alertRabbit.getDbConnection(properties)) {
+            Scheduler scheduler = alertRabbit.schedulerBuilder(properties, connection);
             scheduler.start();
-            JobDataMap data = new JobDataMap(Map.of("connection", alertRabbit.getDbConnection(properties)));
-            JobDetail job = newJob(Rabbit.class)
-                    .usingJobData(data)
-                    .build();
-            SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(Integer.valueOf(properties.getProperty("rabbit.interval")))
-                    .repeatForever();
-            Trigger trigger = newTrigger()
-                    .startNow()
-                    .withSchedule(times)
-                    .build();
-            scheduler.scheduleJob(job, trigger);
             Thread.sleep(10000);
             scheduler.shutdown();
         } catch (Exception se) {
@@ -46,6 +34,37 @@ public class AlertRabbit {
         }
     }
 
+    /**
+     * Method has a building configurations for scheduler
+     *
+     * @param properties - properties
+     * @param connection - connection for DB
+     * @return - scheduler
+     * @throws SchedulerException
+     */
+    private Scheduler schedulerBuilder(Properties properties, Connection connection) throws SchedulerException {
+        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        JobDataMap data = new JobDataMap(Map.of("connection", connection));
+        JobDetail job = newJob(Rabbit.class)
+                .usingJobData(data)
+                .build();
+        SimpleScheduleBuilder times = simpleSchedule()
+                .withIntervalInSeconds(Integer.valueOf(properties.getProperty("rabbit.interval")))
+                .repeatForever();
+        Trigger trigger = newTrigger()
+                .startNow()
+                .withSchedule(times)
+                .build();
+        scheduler.scheduleJob(job, trigger);
+        return scheduler;
+    }
+
+    /**
+     * Method returns ready properties
+     *
+     * @return - properties
+     * @throws IOException
+     */
     private Properties getResultProperties() throws IOException {
         Properties properties = new Properties();
         try (InputStream inputStream = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
@@ -57,6 +76,14 @@ public class AlertRabbit {
         return properties;
     }
 
+    /**
+     * Method returns connection with configuration for postgreSql
+     *
+     * @param properties - properties
+     * @return - connection
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     private Connection getDbConnection(Properties properties) throws ClassNotFoundException, SQLException {
         Class.forName(properties.getProperty("driver-class-name"));
         return DriverManager.getConnection(properties.getProperty("url"),
@@ -77,8 +104,8 @@ public class AlertRabbit {
          */
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
-            try (Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
-                 PreparedStatement statement = connection.prepareStatement("insert into rabbit(created) values (?)")) {
+            Connection connection = (Connection) context.getJobDetail().getJobDataMap().get("connection");
+            try (PreparedStatement statement = connection.prepareStatement("insert into rabbit(created) values (?)")) {
                 statement.setDate(1, new Date(System.currentTimeMillis()));
                 statement.executeUpdate();
             } catch (SQLException throwables) {
