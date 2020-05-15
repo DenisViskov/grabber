@@ -28,7 +28,7 @@ public class AlertRabbit {
             Scheduler scheduler = alertRabbit.schedulerBuilder(properties, connection);
             scheduler.start();
             Thread.sleep(10000);
-            scheduler.shutdown();
+            scheduler.shutdown(true);
         } catch (Exception se) {
             se.printStackTrace();
         }
