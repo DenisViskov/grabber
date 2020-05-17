@@ -2,6 +2,8 @@ package quartz;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,12 @@ import static org.quartz.SimpleScheduleBuilder.*;
  * @since 13.05.2020
  */
 public class AlertRabbit {
+
+    /**
+     * Logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(AlertRabbit.class);
+
     public static void main(String[] args) throws IOException {
         AlertRabbit alertRabbit = new AlertRabbit();
         Properties properties = alertRabbit.getResultProperties();
@@ -30,7 +38,7 @@ public class AlertRabbit {
             Thread.sleep(10000);
             scheduler.shutdown(true);
         } catch (Exception se) {
-            se.printStackTrace();
+            LOG.error(se.getMessage(), se);
         }
     }
 
@@ -70,7 +78,7 @@ public class AlertRabbit {
         try (InputStream inputStream = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             properties.load(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
             throw new IOException();
         }
         return properties;
@@ -109,7 +117,7 @@ public class AlertRabbit {
                 statement.setDate(1, new Date(System.currentTimeMillis()));
                 statement.executeUpdate();
             } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                LOG.error(throwables.getMessage(), throwables);
             }
         }
     }
