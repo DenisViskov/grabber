@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * Класс реализует ...
+ * Class shows how to works with jsoup library
  *
  * @author Денис Висков
  * @version 1.0
@@ -24,31 +24,58 @@ public class SqlRuParse {
     public static void main(String[] args) throws IOException {
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         SqlRuParse parse = new SqlRuParse();
-        System.out.println(parse.finalBuilder(doc));
+        for (String result : parse.finalBuilder(doc)) {
+            System.out.println(result);
+        }
     }
 
+    /**
+     * Method getting urls from HTML page by postslisttopic class tag
+     *
+     * @param document - document HTML
+     * @return - List of urls
+     */
     private List<String> getUrls(Document document) {
         return document.select(".postslisttopic")
                 .stream()
-                .map(element -> element.attr("href"))
+                .map(element -> element.child(0).attr("href"))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method getting dates from HTML page by altCol tag
+     *
+     * @param document - document
+     * @return - List of dates
+     */
     private List<String> getDates(Document document) {
         return document.select(".altCol")
                 .stream()
                 .map(Element::text)
-                .filter(text -> text.matches("^\\d+.+\\d$"))
+                .filter(text -> text.matches("^\\d+.+\\d$")
+                        || text.matches("^сегодня.+\\d$"))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method getting names of jobs by postslisttopic tag on HTML page
+     *
+     * @param document - document
+     * @return - list of names
+     */
     private List<String> getName(Document document) {
         return document.select(".postslisttopic")
                 .stream()
-                .map(Element::text)
+                .map(element -> element.child(0).text())
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method is a builder finally list of urls,names and dates
+     *
+     * @param document - document
+     * @return - List of urls/names/dates from HTML
+     */
     private List<String> finalBuilder(Document document) {
         List<String> urls = getUrls(document);
         List<String> names = getName(document);
