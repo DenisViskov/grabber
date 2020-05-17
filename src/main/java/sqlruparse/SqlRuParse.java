@@ -2,6 +2,7 @@ package sqlruparse;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Класс реализует ...
@@ -21,31 +23,41 @@ public class SqlRuParse {
 
     public static void main(String[] args) throws IOException {
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-        System.out.println(getUrlNameAndDate(doc));
+        SqlRuParse parse = new SqlRuParse();
+        System.out.println(parse.finalBuilder(doc));
     }
 
-    private static String getUrlNameAndDate(Document document) {
-        StringJoiner result = new StringJoiner(System.lineSeparator());
-        AtomicInteger increment = new AtomicInteger();
-        List<String> dates = getDate(document);
-        document.select(".postslisttopic")
+    private List<String> getUrls(Document document) {
+        return document.select(".postslisttopic")
                 .stream()
-                .forEach(element -> {
-                    result.add(element.child(0).attr("href"));
-                    result.add(element.child(0).text());
-                    result.add(dates.get(increment.getAndIncrement()));
-                    result.add(System.lineSeparator());
-                });
-        return result.toString();
+                .map(element -> element.attr("href"))
+                .collect(Collectors.toList());
     }
 
-    private static List<String> getDate(Document document) {
+    private List<String> getDates(Document document) {
+        return document.select(".altCol")
+                .stream()
+                .map(Element::text)
+                .filter(text -> text.matches("^\\d+.+\\d$"))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getName(Document document) {
+        return document.select(".postslisttopic")
+                .stream()
+                .map(Element::text)
+                .collect(Collectors.toList());
+    }
+
+    private List<String> finalBuilder(Document document) {
+        List<String> urls = getUrls(document);
+        List<String> names = getName(document);
+        List<String> dates = getDates(document);
         List<String> result = new ArrayList<>();
-        Elements row = document.select(".altCol");
-        for (int i = 0; i < row.size(); i++) {
-            if (i % 2 != 0) {
-                result.add(row.get(i).text());
-            }
+        for (int i = 0; i < urls.size(); i++) {
+            result.add(urls.get(i) + System.lineSeparator()
+                    + names.get(i) + System.lineSeparator()
+                    + dates.get(i) + System.lineSeparator());
         }
         return result;
     }
