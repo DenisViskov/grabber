@@ -20,7 +20,7 @@ public class TimeConversion {
     /**
      * Default formatter
      */
-    private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy' at 'HH:mm");
+    private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern("dd.MM.yy' at 'HH:mm");
 
     /**
      * Month
