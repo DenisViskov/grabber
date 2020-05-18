@@ -110,7 +110,7 @@ public class SqlRuParser implements Parser<Document, String> {
         try {
             return Jsoup.connect(someData).get();
         } catch (IOException e) {
-            LOG.debug(e.getMessage(), e);
+            LOG.error(e.getMessage(), e);
             throw new IOException();
         }
     }
