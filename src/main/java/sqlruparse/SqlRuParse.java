@@ -6,9 +6,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class SqlRuParse {
 
     public static void main(String[] args) throws IOException {
+        ProxyChanger.useThroughProxy();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         SqlRuParse parse = new SqlRuParse();
         for (String result : parse.finalBuilder(doc)) {
@@ -53,7 +56,8 @@ public class SqlRuParse {
                 .stream()
                 .map(Element::text)
                 .filter(text -> text.matches("^\\d+.+\\d$")
-                        || text.matches("^сегодня.+\\d$"))
+                        || text.matches("^сегодня.+\\d$")
+                        || text.matches("^вчера.+\\d$"))
                 .collect(Collectors.toList());
     }
 
@@ -77,14 +81,16 @@ public class SqlRuParse {
      * @return - List of urls/names/dates from HTML
      */
     private List<String> finalBuilder(Document document) {
+        TimeConversion timeConversion = new TimeConversion();
         List<String> urls = getUrls(document);
         List<String> names = getName(document);
-        List<String> dates = getDates(document);
+        List<LocalDateTime> dates = timeConversion.toDateChanger(getDates(document));
         List<String> result = new ArrayList<>();
         for (int i = 0; i < urls.size(); i++) {
             result.add(urls.get(i) + System.lineSeparator()
                     + names.get(i) + System.lineSeparator()
-                    + dates.get(i) + System.lineSeparator());
+                    + dates.get(i).format(timeConversion.getDefaultFormatter())
+                    + System.lineSeparator());
         }
         return result;
     }
