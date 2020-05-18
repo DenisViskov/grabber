@@ -56,7 +56,8 @@ public class SqlRuParse {
                 .stream()
                 .map(Element::text)
                 .filter(text -> text.matches("^\\d+.+\\d$")
-                        || text.matches("^сегодня.+\\d$"))
+                        || text.matches("^сегодня.+\\d$")
+                        || text.matches("^вчера.+\\d$"))
                 .collect(Collectors.toList());
     }
 
