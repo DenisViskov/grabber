@@ -3,15 +3,13 @@ package sqlruparse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.net.URL;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -21,13 +19,18 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 17.05.2020
  */
-public class SqlRuParse {
+public class SqlRuParser implements Parser<Document, String> {
+
+    /**
+     * Logger
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
     public static void main(String[] args) throws IOException {
         ProxyChanger.useThroughProxy();
-        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-        SqlRuParse parse = new SqlRuParse();
-        for (String result : parse.finalBuilder(doc)) {
+        SqlRuParser parser = new SqlRuParser();
+        Document doc = parser.getData("https://www.sql.ru/forum/job-offers");
+        for (String result : parser.finalBuilder(doc)) {
             System.out.println(result);
         }
     }
@@ -80,7 +83,7 @@ public class SqlRuParse {
      * @param document - document
      * @return - List of urls/names/dates from HTML
      */
-    private List<String> finalBuilder(Document document) {
+    public List<String> finalBuilder(Document document) {
         TimeConversion timeConversion = new TimeConversion();
         List<String> urls = getUrls(document);
         List<String> names = getName(document);
@@ -93,5 +96,22 @@ public class SqlRuParse {
                     + System.lineSeparator());
         }
         return result;
+    }
+
+    /**
+     * Method given data and returns Document HTML from target page
+     *
+     * @param someData - someData
+     * @return - document
+     * @throws IOException
+     */
+    @Override
+    public Document getData(String someData) throws IOException {
+        try {
+            return Jsoup.connect(someData).get();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+            throw new IOException();
+        }
     }
 }

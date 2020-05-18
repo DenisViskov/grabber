@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 18.05.2020
  */
-public class TimeConversion {
+public class TimeConversion implements Time<LocalDateTime> {
 
     /**
      * Default formatter
@@ -61,7 +61,7 @@ public class TimeConversion {
      * @param line - line
      * @return - date LocalDateTime
      */
-    private LocalDateTime ifLineBeginWithNumber(String line) {
+    public LocalDateTime ifLineBeginWithNumber(String line) {
         String[] split = line.split(" ");
         int year = Integer.parseInt(split[2].replaceFirst(",", ""));
         int day = Integer.parseInt(split[0]);
@@ -78,7 +78,7 @@ public class TimeConversion {
      * @param line - line
      * @return - date LocalDateTime
      */
-    private LocalDateTime ifLineBeginWithWord(String line) {
+    public LocalDateTime ifLineBeginWithWord(String line) {
         String[] split = line.split(" ");
         int year = LocalDateTime.now().getYear();
         int day = split[0].contains("сегодня") ? LocalDateTime.now().getDayOfMonth()
