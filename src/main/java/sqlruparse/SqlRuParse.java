@@ -80,7 +80,7 @@ public class SqlRuParse {
      * @param document - document
      * @return - List of urls/names/dates from HTML
      */
-    private List<String> finalBuilder(Document document) {
+    public List<String> finalBuilder(Document document) {
         TimeConversion timeConversion = new TimeConversion();
         List<String> urls = getUrls(document);
         List<String> names = getName(document);
