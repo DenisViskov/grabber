@@ -8,6 +8,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -21,10 +23,28 @@ import java.util.stream.Collectors;
  */
 public class SqlRuParse {
 
+    private final Map<String, Integer> month = new HashMap<>();
+
+    public SqlRuParse() {
+        month.put("янв", 1);
+        month.put("фев", 2);
+        month.put("мар", 3);
+        month.put("апр", 4);
+        month.put("май", 5);
+        month.put("июн", 6);
+        month.put("июл", 7);
+        month.put("авг", 8);
+        month.put("сен", 9);
+        month.put("окт", 10);
+        month.put("ноя", 11);
+        month.put("дек", 12);
+    }
+
     public static void main(String[] args) throws IOException {
         useThroughProxy();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         SqlRuParse parse = new SqlRuParse();
+        parse.toDateChanger(parse.getDates(doc));
         for (String result : parse.finalBuilder(doc)) {
             System.out.println(result);
         }
@@ -94,7 +114,7 @@ public class SqlRuParse {
         return dates.stream()
                 .map(line -> {
                     Date date = null;
-                    if (line.matches("^\\d")) {
+                    if (line.matches("^\\d+.+")) {
                         date = ifLineBeginWithNumber(line);
                     }
                     return date;
@@ -102,17 +122,17 @@ public class SqlRuParse {
     }
 
     private Date ifLineBeginWithNumber(String line) {
-        SimpleDateFormat givenFormat = new SimpleDateFormat("d.MMM.yy','HH:mm", Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("dd.MM.yyyy' at 'HH:mm", Locale.getDefault());
-        Date date = new Date();
+        String[] split = line.split(" ");
+        int year = Integer.parseInt(split[2].replaceFirst(",", ""));
+        int day = Integer.parseInt(split[0]);
+        Month month = Month.of(this.month.get(split[1]));
+        int hour = Integer.valueOf(split[3].split(":")[0]);
+        int minute = Integer.valueOf(split[3].split(":")[1]);
+        LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm", Locale.getDefault());
+        String getTime = time.format(formatter);
         Date result = new Date();
-        try {
-            date = givenFormat.parse(line);
-            result = outputFormat.parse(outputFormat.format(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return result;
+        return new Date(Date.parse(getTime));
     }
 
     private static void useThroughProxy() {
