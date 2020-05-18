@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class SqlRuParse {
 
     public static void main(String[] args) throws IOException {
+        useThroughProxy();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         SqlRuParse parse = new SqlRuParse();
         for (String result : parse.finalBuilder(doc)) {
@@ -87,5 +88,10 @@ public class SqlRuParse {
                     + dates.get(i) + System.lineSeparator());
         }
         return result;
+    }
+
+    private static void useThroughProxy() {
+        System.setProperty("https.proxyHost", "192.168.111.102");
+        System.setProperty("https.proxyPort", "3128");
     }
 }
