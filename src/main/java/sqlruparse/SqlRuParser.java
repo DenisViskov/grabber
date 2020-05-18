@@ -27,7 +27,7 @@ public class SqlRuParser implements Parser<Document, String> {
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
     public static void main(String[] args) throws IOException {
-        //ProxyChanger.useThroughProxy();
+        ProxyChanger.useThroughProxy();
         SqlRuParser parser = new SqlRuParser();
         Document doc = parser.getData("https://www.sql.ru/forum/job-offers");
         for (String result : parser.finalBuilder(doc)) {

@@ -1,9 +1,12 @@
 package sqlruparse;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,42 +15,19 @@ import static org.hamcrest.core.Is.is;
 
 public class SqlRuParserTest {
 
-    private static final Document DOCUMENT = new Document("");
+    private static Document document;
 
     @BeforeClass
-    public static void init() {
-        DOCUMENT.appendElement("td")
-                .addClass("postslisttopic")
-                .append("Важно: <a href=\"https://www.sql.ru/forum/484798/pravila-foruma\">Правила форума</a> \n"
-                        + " <!--begin case_istopicclosed--> <span class=\"closedTopic\"> [закрыт]</span> \n"
-                        + " <!--end case_istopicclosed--> &nbsp; <a class=\"newTopic\" "
-                        + "href=\"https://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=484798\">[new]</a>");
-        DOCUMENT.appendElement("td")
-                .addClass("altCol")
-                .append("<td style=\"text-align:center\" class=\"altCol\">2 дек 19, 22:29</td>");
-        DOCUMENT.appendElement("td")
-                .addClass("postslisttopic")
-                .append("Важно: <a href=\"https://www.sql.ru/forum/484798/pravila-foruma\">Правила форума</a> \n"
-                        + " <!--begin case_istopicclosed--> <span class=\"closedTopic\"> [закрыт]</span> \n"
-                        + " <!--end case_istopicclosed--> &nbsp; <a class=\"newTopic\" "
-                        + "href=\"https://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=484798\">[new]</a>");
-        DOCUMENT.appendElement("td")
-                .addClass("altCol")
-                .append("<td style=\"text-align:center\" class=\"altCol\">сегодня, 22:29</td>");
-        DOCUMENT.appendElement("td")
-                .addClass("postslisttopic")
-                .append("Важно: <a href=\"https://www.sql.ru/forum/484798/pravila-foruma\">Правила форума</a> \n"
-                        + " <!--begin case_istopicclosed--> <span class=\"closedTopic\"> [закрыт]</span> \n"
-                        + " <!--end case_istopicclosed--> &nbsp; <a class=\"newTopic\" "
-                        + "href=\"https://www.sql.ru/forum/actualutils.aspx?action=gotonew&amp;tid=484798\">[new]</a>");
-        DOCUMENT.appendElement("td")
-                .addClass("altCol")
-                .append("<td style=\"text-align:center\" class=\"altCol\">вчера, 22:29</td>");
+    public static void init() throws IOException {
+        document = Jsoup.parse(SqlRuParserTest.class.getClassLoader()
+                .getResourceAsStream("Test.html"),
+                "windows-1251",
+                Paths.get("Test.html").toUri().toString());
     }
 
     @Test
     public void finalBuilderTest() {
-        List<String> out = new SqlRuParser().finalBuilder(DOCUMENT);
+        List<String> out = new SqlRuParser().finalBuilder(document);
         TimeConversion conversion = new TimeConversion();
         String post = "https://www.sql.ru/forum/484798/pravila-foruma"
                 + System.lineSeparator()
