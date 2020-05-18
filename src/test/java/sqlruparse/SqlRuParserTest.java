@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.is;
 
-public class SqlRuParseTest {
+public class SqlRuParserTest {
 
     private static final Document DOCUMENT = new Document("");
 
@@ -47,7 +47,7 @@ public class SqlRuParseTest {
 
     @Test
     public void finalBuilderTest() {
-        List<String> out = new SqlRuParse().finalBuilder(DOCUMENT);
+        List<String> out = new SqlRuParser().finalBuilder(DOCUMENT);
         TimeConversion conversion = new TimeConversion();
         String post = "https://www.sql.ru/forum/484798/pravila-foruma"
                 + System.lineSeparator()
