@@ -110,18 +110,14 @@ public class SqlRuParse {
         return result;
     }
 
-    private List<Date> toDateChanger(List<String> dates) {
+    private List<LocalDateTime> toDateChanger(List<String> dates) {
         return dates.stream()
-                .map(line -> {
-                    Date date = null;
-                    if (line.matches("^\\d+.+")) {
-                        date = ifLineBeginWithNumber(line);
-                    }
-                    return date;
-                }).collect(Collectors.toList());
+                .map(line -> line.matches("^\\d+.+") ? ifLineBeginWithNumber(line)
+                        : ifLineBeginWithWord(line)
+                ).collect(Collectors.toList());
     }
 
-    private Date ifLineBeginWithNumber(String line) {
+    private LocalDateTime ifLineBeginWithNumber(String line) {
         String[] split = line.split(" ");
         int year = Integer.parseInt(split[2].replaceFirst(",", ""));
         int day = Integer.parseInt(split[0]);
@@ -129,10 +125,19 @@ public class SqlRuParse {
         int hour = Integer.valueOf(split[3].split(":")[0]);
         int minute = Integer.valueOf(split[3].split(":")[1]);
         LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm", Locale.getDefault());
-        String getTime = time.format(formatter);
-        Date result = new Date();
-        return new Date(Date.parse(getTime));
+        return time;
+    }
+
+    private LocalDateTime ifLineBeginWithWord(String line) {
+        String[] split = line.split(" ");
+        int year = Integer.parseInt(split[2].replaceFirst(",", ""));
+        int day = split[0].contains("сегодня") ? LocalDateTime.now().getDayOfMonth()
+                : LocalDateTime.now().getDayOfMonth() - 1;
+        Month month = Month.of(this.month.get(split[1]));
+        int hour = Integer.valueOf(split[3].split(":")[0]);
+        int minute = Integer.valueOf(split[3].split(":")[1]);
+        LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
+        return time;
     }
 
     private static void useThroughProxy() {
