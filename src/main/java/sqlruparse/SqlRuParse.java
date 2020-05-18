@@ -6,9 +6,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -86,6 +86,31 @@ public class SqlRuParse {
             result.add(urls.get(i) + System.lineSeparator()
                     + names.get(i) + System.lineSeparator()
                     + dates.get(i) + System.lineSeparator());
+        }
+        return result;
+    }
+
+    private List<Date> toDateChanger(List<String> dates) {
+        return dates.stream()
+                .map(line -> {
+                    Date date = null;
+                    if (line.matches("^\\d")) {
+                        date = ifLineBeginWithNumber(line);
+                    }
+                    return date;
+                }).collect(Collectors.toList());
+    }
+
+    private Date ifLineBeginWithNumber(String line) {
+        SimpleDateFormat givenFormat = new SimpleDateFormat("d.MMM.yy','HH:mm", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd.MM.yyyy' at 'HH:mm", Locale.getDefault());
+        Date date = new Date();
+        Date result = new Date();
+        try {
+            date = givenFormat.parse(line);
+            result = outputFormat.parse(outputFormat.format(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
         return result;
     }
