@@ -80,12 +80,12 @@ public class TimeConversion {
      */
     private LocalDateTime ifLineBeginWithWord(String line) {
         String[] split = line.split(" ");
-        int year = Integer.parseInt(split[2].replaceFirst(",", ""));
+        int year = LocalDateTime.now().getYear();
         int day = split[0].contains("сегодня") ? LocalDateTime.now().getDayOfMonth()
                 : LocalDateTime.now().getDayOfMonth() - 1;
-        Month month = Month.of(this.month.get(split[1]));
-        int hour = Integer.valueOf(split[3].split(":")[0]);
-        int minute = Integer.valueOf(split[3].split(":")[1]);
+        Month month = LocalDateTime.now().getMonth();
+        int hour = Integer.valueOf(split[1].split(":")[0]);
+        int minute = Integer.valueOf(split[1].split(":")[1]);
         LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
         return time;
     }

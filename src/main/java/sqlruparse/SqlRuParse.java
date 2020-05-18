@@ -80,14 +80,16 @@ public class SqlRuParse {
      * @return - List of urls/names/dates from HTML
      */
     private List<String> finalBuilder(Document document) {
+        TimeConversion timeConversion = new TimeConversion();
         List<String> urls = getUrls(document);
         List<String> names = getName(document);
-        List<String> dates = getDates(document);
+        List<LocalDateTime> dates = timeConversion.toDateChanger(getDates(document));
         List<String> result = new ArrayList<>();
         for (int i = 0; i < urls.size(); i++) {
             result.add(urls.get(i) + System.lineSeparator()
                     + names.get(i) + System.lineSeparator()
-                    + dates.get(i) + System.lineSeparator());
+                    + dates.get(i).format(timeConversion.getDefaultFormatter())
+                    + System.lineSeparator());
         }
         return result;
     }
