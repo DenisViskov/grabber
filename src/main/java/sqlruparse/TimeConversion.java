@@ -2,6 +2,7 @@ package sqlruparse;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,11 @@ import java.util.stream.Collectors;
  * @since 18.05.2020
  */
 public class TimeConversion {
+
+    /**
+     * Default formatter
+     */
+    private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy' at 'HH:mm");
 
     /**
      * Month
@@ -82,5 +88,9 @@ public class TimeConversion {
         int minute = Integer.valueOf(split[3].split(":")[1]);
         LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
         return time;
+    }
+
+    public DateTimeFormatter getDefaultFormatter() {
+        return defaultFormatter;
     }
 }
