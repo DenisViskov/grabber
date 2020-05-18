@@ -23,28 +23,10 @@ import java.util.stream.Collectors;
  */
 public class SqlRuParse {
 
-    private final Map<String, Integer> month = new HashMap<>();
-
-    public SqlRuParse() {
-        month.put("янв", 1);
-        month.put("фев", 2);
-        month.put("мар", 3);
-        month.put("апр", 4);
-        month.put("май", 5);
-        month.put("июн", 6);
-        month.put("июл", 7);
-        month.put("авг", 8);
-        month.put("сен", 9);
-        month.put("окт", 10);
-        month.put("ноя", 11);
-        month.put("дек", 12);
-    }
-
     public static void main(String[] args) throws IOException {
-        useThroughProxy();
+        ProxyChanger.useThroughProxy();
         Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
         SqlRuParse parse = new SqlRuParse();
-        parse.toDateChanger(parse.getDates(doc));
         for (String result : parse.finalBuilder(doc)) {
             System.out.println(result);
         }
@@ -108,40 +90,5 @@ public class SqlRuParse {
                     + dates.get(i) + System.lineSeparator());
         }
         return result;
-    }
-
-    private List<LocalDateTime> toDateChanger(List<String> dates) {
-        return dates.stream()
-                .map(line -> line.matches("^\\d+.+") ? ifLineBeginWithNumber(line)
-                        : ifLineBeginWithWord(line)
-                ).collect(Collectors.toList());
-    }
-
-    private LocalDateTime ifLineBeginWithNumber(String line) {
-        String[] split = line.split(" ");
-        int year = Integer.parseInt(split[2].replaceFirst(",", ""));
-        int day = Integer.parseInt(split[0]);
-        Month month = Month.of(this.month.get(split[1]));
-        int hour = Integer.valueOf(split[3].split(":")[0]);
-        int minute = Integer.valueOf(split[3].split(":")[1]);
-        LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
-        return time;
-    }
-
-    private LocalDateTime ifLineBeginWithWord(String line) {
-        String[] split = line.split(" ");
-        int year = Integer.parseInt(split[2].replaceFirst(",", ""));
-        int day = split[0].contains("сегодня") ? LocalDateTime.now().getDayOfMonth()
-                : LocalDateTime.now().getDayOfMonth() - 1;
-        Month month = Month.of(this.month.get(split[1]));
-        int hour = Integer.valueOf(split[3].split(":")[0]);
-        int minute = Integer.valueOf(split[3].split(":")[1]);
-        LocalDateTime time = LocalDateTime.of(year, month, day, hour, minute);
-        return time;
-    }
-
-    private static void useThroughProxy() {
-        System.setProperty("https.proxyHost", "192.168.111.102");
-        System.setProperty("https.proxyPort", "3128");
     }
 }
