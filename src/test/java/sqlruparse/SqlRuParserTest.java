@@ -66,5 +66,6 @@ public class SqlRuParserTest {
         SqlRuParser parser = new SqlRuParser();
         ProxyChanger.useThroughProxy();
         Document out = parser.getData(parser.getUrl());
+        ProxyChanger.useThroughDefaultNetwork();
     }
 }
