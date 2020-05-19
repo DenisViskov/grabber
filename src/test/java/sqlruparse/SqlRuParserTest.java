@@ -20,7 +20,7 @@ public class SqlRuParserTest {
     @BeforeClass
     public static void init() throws IOException {
         document = Jsoup.parse(SqlRuParserTest.class.getClassLoader()
-                .getResourceAsStream("Test.html"),
+                        .getResourceAsStream("Test.html"),
                 "windows-1251",
                 Paths.get("Test.html").toUri().toString());
     }
@@ -51,5 +51,20 @@ public class SqlRuParserTest {
                         + System.lineSeparator()
         );
         assertThat(expected, is(out));
+    }
+
+    @Test
+    public void getDataTest() throws IOException {
+        SqlRuParser parser = new SqlRuParser();
+        Document expected = Jsoup.connect(parser.getUrl()).get();
+        Document out = parser.getData(parser.getUrl());
+        assertThat(expected.head().text(), is(out.head().text()));
+    }
+
+    @Test(expected = IOException.class)
+    public void getDataThrowIOException() throws IOException {
+        SqlRuParser parser = new SqlRuParser();
+        ProxyChanger.useThroughProxy();
+        Document out = parser.getData(parser.getUrl());
     }
 }
