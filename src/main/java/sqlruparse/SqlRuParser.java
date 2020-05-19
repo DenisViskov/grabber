@@ -26,11 +26,16 @@ public class SqlRuParser implements Parser<Document, String> {
      */
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
+    /**
+     * URL
+     */
+    private final String url = "https://www.sql.ru/forum/job-offers";
+
     public static void main(String[] args) throws IOException {
-        ProxyChanger.useThroughProxy();
+        //ProxyChanger.useThroughProxy();
         SqlRuParser parser = new SqlRuParser();
-        Document doc = parser.getData("https://www.sql.ru/forum/job-offers");
-        for (String result : parser.finalBuilder(doc)) {
+        Document doc = parser.getData(parser.url);
+        for (String result : parser.parseGivenCountPages(5)) {
             System.out.println(result);
         }
     }
@@ -113,5 +118,26 @@ public class SqlRuParser implements Parser<Document, String> {
             LOG.error(e.getMessage(), e);
             throw new IOException();
         }
+    }
+
+    /**
+     * Method parsing web pages by given count number
+     *
+     * @param number - count
+     * @return - list of pages
+     * @throws IOException
+     */
+    private List<String> parseGivenCountPages(int number) throws IOException {
+        List<String> result = new ArrayList<>();
+        String page = url + "/";
+        for (int i = 1; i != number; i++) {
+            Document document = getData(page + i);
+            result.addAll(finalBuilder(document));
+        }
+        return result;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }
