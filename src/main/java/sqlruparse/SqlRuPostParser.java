@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Класс реализует ...
+ * Class is a post parse
  *
  * @author Денис Висков
  * @version 1.0
@@ -20,6 +20,13 @@ import java.util.List;
  */
 public class SqlRuPostParser implements Parser<Post, Document> {
 
+    /**
+     * Method has realizes parsing one post by given document
+     *
+     * @param someData - someData
+     * @return - Post
+     * @throws IOException
+     */
     @Override
     public Post getData(Document someData) throws IOException {
         TimeConversion conversion = new TimeConversion();
@@ -30,6 +37,12 @@ public class SqlRuPostParser implements Parser<Post, Document> {
         return new Post(url, name, description, time);
     }
 
+    /**
+     * Method getting description by post
+     *
+     * @param document - document
+     * @return - description
+     */
     private String getDescription(Document document) {
         return document
                 .select(".msgBody")
@@ -37,13 +50,26 @@ public class SqlRuPostParser implements Parser<Post, Document> {
                 .text();
     }
 
+    /**
+     * Method getting created time of post
+     *
+     * @param document - document
+     * @return - Time
+     */
     private String getDate(Document document) {
         return document.selectFirst(".msgFooter")
                 .ownText()
                 .replaceFirst("\\D+$", "");
     }
 
+    /**
+     * Method getting name of post
+     *
+     * @param document - document
+     * @return - name
+     */
     private String getName(Document document) {
-        return document.selectFirst(".messageHeader").ownText();
+        return document.selectFirst(".messageHeader")
+                .ownText();
     }
 }
