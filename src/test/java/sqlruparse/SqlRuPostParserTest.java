@@ -7,7 +7,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.is;
@@ -26,9 +30,16 @@ public class SqlRuPostParserTest {
 
     @Test
     public void getDataTest() throws IOException {
-       // Post expected = new Post("https://www.sql.ru/forum/1325330/lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t",
-               // "Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т.", "")
+        Post expected = new Post("file:///C:/projects/job4j_grabber/SqlRuPostParserTest.html",
+                "Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т.",
+                Files.readString(Paths.get("./src/test/resources/DescriptionPostTest.txt")),
+                LocalDateTime.of(20,
+                        5,
+                        20,
+                        21,
+                        58));
         SqlRuPostParser parser = new SqlRuPostParser();
-        parser.getData(document);
+        Post out = parser.getData(document);
+        assertThat(expected.toString(), is(out.toString()));
     }
 }
