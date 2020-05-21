@@ -35,7 +35,7 @@ public class SqlRuPostParserTest {
                 Files.readString(Paths.get("./src/test/resources/DescriptionPostTest.txt")),
                 LocalDateTime.of(20,
                         5,
-                        20,
+                        13,
                         21,
                         58));
         SqlRuPostParser parser = new SqlRuPostParser();
