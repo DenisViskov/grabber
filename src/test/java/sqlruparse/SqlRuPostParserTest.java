@@ -30,7 +30,7 @@ public class SqlRuPostParserTest {
 
     @Test
     public void getDataTest() throws IOException {
-        Post expected = new Post("file:///C:/projects/job4j_grabber/SqlRuPostParserTest.html",
+        Post expected = new Post("file:///" + Paths.get("SqlRuPostParserTest.html").toAbsolutePath().toString(),
                 "Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т.",
                 Files.readString(Paths.get("./src/test/resources/DescriptionPostTest.txt")),
                 LocalDateTime.of(20,
