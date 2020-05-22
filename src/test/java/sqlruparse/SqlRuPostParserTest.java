@@ -2,14 +2,10 @@ package sqlruparse;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,15 +21,15 @@ public class SqlRuPostParserTest {
     @BeforeClass
     public static void init() throws IOException {
         document = Jsoup.parse(SqlRuPostParser.class.getClassLoader()
-                        .getResourceAsStream("SqlRuPostParserTest.html"),
+                        .getResourceAsStream("PostTest.html"),
                 "windows-1251",
-                Paths.get("SqlRuPostParserTest.html").toUri().toString());
+                Paths.get("PostTest.html").toUri().toString());
     }
 
     @Test
     public void getDataTest() throws IOException {
         Post expected = new Post("file:///" + FileSystems.getDefault()
-                .getPath("SqlRuPostParserTest.html")
+                .getPath("PostTest.html")
                 .toAbsolutePath()
                 .toString()
                 .replaceAll("\\\\", "/"),
