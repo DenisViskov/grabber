@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 17.05.2020
  */
-public class SqlRuParser implements DataConverter<Document, String> {
+public class SqlRuParser implements DataConverter<Document, String>, Parse {
 
     /**
      * Logger
@@ -138,5 +138,15 @@ public class SqlRuParser implements DataConverter<Document, String> {
 
     public String getUrl() {
         return url;
+    }
+
+    @Override
+    public List<Post> list(String link) {
+        return null;
+    }
+
+    @Override
+    public Post detail(String link) {
+        return null;
     }
 }
