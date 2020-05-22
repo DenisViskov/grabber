@@ -22,7 +22,7 @@ public class SqlRuPostParserTest {
     public static void init() throws IOException {
         document = Jsoup.parse(SqlRuPostParser.class.getClassLoader()
                         .getResourceAsStream("PostTest.html"),
-                "windows-1251",
+                "Cp1251",
                 Paths.get("PostTest.html").toUri().toString());
     }
 
