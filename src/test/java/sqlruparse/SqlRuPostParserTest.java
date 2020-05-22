@@ -42,6 +42,6 @@ public class SqlRuPostParserTest {
                         58));
         SqlRuPostParser parser = new SqlRuPostParser();
         Post out = parser.getData(document);
-        assertThat(expected.toString(), is(out.toString()));
+        assertThat(out.toString(), is(expected.toString()));
     }
 }
