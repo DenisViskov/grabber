@@ -28,8 +28,8 @@ public class SqlRuPostParserTest {
 
     @Test
     public void getDataTest() throws IOException {
-        Post expected = new Post("file:///" + FileSystems.getDefault()
-                .getPath("PostTest.html")
+        Post expected = new Post("file:///" + Paths
+                .get("PostTest.html")
                 .toAbsolutePath()
                 .toString()
                 .replaceAll("\\\\", "/"),
