@@ -1,11 +1,6 @@
 package sqlruparse;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,7 +13,7 @@ import java.util.List;
  * @version 1.0
  * @since 20.05.2020
  */
-public class SqlRuPostParser implements Parser<Post, Document> {
+public class SqlRuPostParser implements DataConverter<Post, Document> {
 
     /**
      * Method has realizes parsing one post by given document

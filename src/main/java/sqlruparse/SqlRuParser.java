@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URL;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 17.05.2020
  */
-public class SqlRuParser implements Parser<Document, String> {
+public class SqlRuParser implements DataConverter<Document, String> {
 
     /**
      * Logger
