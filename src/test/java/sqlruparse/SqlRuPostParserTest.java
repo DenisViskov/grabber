@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
+import static org.hamcrest.core.StringContains.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.is;
 
@@ -44,7 +45,7 @@ public class SqlRuPostParserTest {
         SqlRuPostParser parser = new SqlRuPostParser();
         Post out = parser.getData(document);
         assertThat(out.getName(), is(expected.getName()));
-        assertThat(out.getUrl(), StringContains.containsString(expected.getUrl()));
+        assertThat(out.getUrl(), containsString(expected.getUrl()));
         assertThat(out.getCreated(), is(expected.getCreated()));
         assertThat(out.getDescription(), is(expected.getDescription()));
     }
