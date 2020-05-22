@@ -1,5 +1,6 @@
 package sqlruparse;
 
+import org.hamcrest.core.StringContains;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.BeforeClass;
@@ -28,7 +29,7 @@ public class SqlRuPostParserTest {
 
     @Test
     public void getDataTest() throws IOException {
-        Post expected = new Post("file:///" + Paths
+        Post expected = new Post(Paths
                 .get("PostTest.html")
                 .toAbsolutePath()
                 .toString()
@@ -42,6 +43,9 @@ public class SqlRuPostParserTest {
                         58));
         SqlRuPostParser parser = new SqlRuPostParser();
         Post out = parser.getData(document);
-        assertThat(out.toString(), is(expected.toString()));
+        assertThat(out.getName(), is(expected.getName()));
+        assertThat(out.getUrl(), StringContains.containsString(expected.getUrl()));
+        assertThat(out.getCreated(), is(expected.getCreated()));
+        assertThat(out.getDescription(), is(expected.getDescription()));
     }
 }
