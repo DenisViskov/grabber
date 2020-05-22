@@ -1,5 +1,6 @@
 package sqlruparse;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public interface Parse {
      * @param link - url
      * @return - List of post
      */
-    List<Post> list(String link);
+    List<Post> list(String link) throws IOException;
 
     /**
      * Method should return Post with whole data
@@ -25,5 +26,5 @@ public interface Parse {
      * @param link - url
      * @return - Post
      */
-    Post detail(String link);
+    Post detail(String link) throws IOException;
 }

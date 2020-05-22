@@ -132,12 +132,22 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
     }
 
     @Override
-    public List<Post> list(String link) {
-        return null;
+    public List<Post> list(String link) throws IOException {
+        Document document = getData(link);
+        SqlRuPostParser parser = new SqlRuPostParser();
+        List<String> urls = getUrls(document);
+        List<Post> result = new ArrayList<>();
+        for (String page : urls) {
+            Post post = parser.getData(getData(page));
+            result.add(post);
+        }
+        return result;
     }
 
     @Override
-    public Post detail(String link) {
-        return null;
+    public Post detail(String link) throws IOException {
+        Document document = getData(link);
+        SqlRuPostParser parser = new SqlRuPostParser();
+        return parser.getData(document);
     }
 }

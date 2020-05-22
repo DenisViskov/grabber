@@ -68,4 +68,43 @@ public class SqlRuParserTest {
         Document out = parser.getData("https://www.sql.ru/forum/job-offers");
         ProxyChanger.useThroughDefaultNetwork();
     }
+
+
+    @Test
+    public void listTest() throws IOException {
+        Post post = new Post("https://www.sql.ru/forum/484798/pravila-foruma",
+                "Правила форума",
+                "blabla",
+                LocalDateTime.of(2019,
+                        12,
+                        2,
+                        22,
+                        29));
+        List<Post> out = new SqlRuParser().list(document.location());
+        assertThat(List.of(post.getName(),
+                post.getUrl(),
+                post.getCreated()), is(List.of(out.get(0).getName(),
+                out.get(0).getUrl(),
+                out.get(0).getCreated())));
+        assertThat(List.of(post.getName(),
+                post.getUrl(),
+                post.getCreated().
+                        withDayOfMonth(LocalDateTime.now()
+                                .getDayOfMonth())),
+                is(List.of(out.get(0).getName(),
+                        out.get(0).getUrl(),
+                        out.get(0).getCreated())));
+        assertThat(List.of(post.getName(),
+                post.getUrl(),
+                post.getCreated().
+                        withDayOfMonth(LocalDateTime.now()
+                                .getDayOfMonth() - 1)),
+                is(List.of(out.get(0).getName(),
+                        out.get(0).getUrl(),
+                        out.get(0).getCreated())));
+    }
+
+    @Test
+    public void detailTest() {
+    }
 }
