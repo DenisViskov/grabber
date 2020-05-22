@@ -56,8 +56,8 @@ public class SqlRuParserTest {
     @Test
     public void getDataTest() throws IOException {
         SqlRuParser parser = new SqlRuParser();
-        Document expected = Jsoup.connect(parser.getUrl()).get();
-        Document out = parser.getData(parser.getUrl());
+        Document expected = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+        Document out = parser.getData("https://www.sql.ru/forum/job-offers");
         assertThat(expected.head().text(), is(out.head().text()));
     }
 
@@ -65,7 +65,7 @@ public class SqlRuParserTest {
     public void getDataThrowIOException() throws IOException {
         SqlRuParser parser = new SqlRuParser();
         ProxyChanger.useThroughProxy();
-        Document out = parser.getData(parser.getUrl());
+        Document out = parser.getData("https://www.sql.ru/forum/job-offers");
         ProxyChanger.useThroughDefaultNetwork();
     }
 }

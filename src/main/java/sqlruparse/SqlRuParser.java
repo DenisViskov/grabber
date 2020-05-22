@@ -25,16 +25,11 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
      */
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
-    /**
-     * URL
-     */
-    private final String url = "https://www.sql.ru/forum/job-offers";
-
     public static void main(String[] args) throws IOException {
         //ProxyChanger.useThroughProxy();
         SqlRuParser parser = new SqlRuParser();
-        Document doc = parser.getData(parser.url);
-        for (String result : parser.parseGivenCountPages(5)) {
+        Document doc = parser.getData("https://www.sql.ru/forum/job-offers");
+        for (String result : parser.parseGivenCountPages(5, "https://www.sql.ru/forum/job-offers")) {
             System.out.println(result);
         }
     }
@@ -126,7 +121,7 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
      * @return - list of pages
      * @throws IOException
      */
-    private List<String> parseGivenCountPages(int number) throws IOException {
+    private List<String> parseGivenCountPages(int number, String url) throws IOException {
         List<String> result = new ArrayList<>();
         String page = url + "/";
         for (int i = 1; i != number; i++) {
@@ -134,10 +129,6 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
             result.addAll(finalBuilder(document));
         }
         return result;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     @Override
