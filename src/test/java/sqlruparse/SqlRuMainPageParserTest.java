@@ -60,6 +60,11 @@ public class SqlRuMainPageParserTest {
     @Test
     public void listTest() throws IOException {
         SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
+        DataConverter converter = Mockito.mock(DataConverter.class);
+        Document document = Jsoup
+                .parse(new File(Paths.get("./src/test/resources/Test.html")
+                        .toAbsolutePath().toString()), "windows-1251");
+        Mockito.when(converter.getData(Mockito.any())).thenReturn(document);
         List<Post> out = parser.list(Paths.get("./src/test/resources/Test.html").toAbsolutePath().toString());
         assertThat(3, is(out.size()));
     }
