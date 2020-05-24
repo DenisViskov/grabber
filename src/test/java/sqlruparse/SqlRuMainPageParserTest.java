@@ -4,7 +4,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,12 +66,13 @@ public class SqlRuMainPageParserTest {
 
     @Test
     public void detailTest() throws IOException {
-        SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
-        Post expected = new Post(Paths
-                .get("PostTest.html")
-                .toAbsolutePath()
-                .toString()
-                .replaceAll("\\\\", "/"),
+        DataConverter converter = Mockito.mock(DataConverter.class);
+        Document document = Jsoup
+                .parse(new File(Paths.get("./src/test/resources/PostTest.html")
+                        .toAbsolutePath().toString()), "windows-1251");
+        Mockito.when(converter.getData(Mockito.any())).thenReturn(document);
+        SqlRuMainPageParser parser = new SqlRuMainPageParser(converter);
+        Post expected = new Post(document.location(),
                 "Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т.",
                 Files.readString(Paths.get("./src/test/resources/DescriptionPostTest.txt")),
                 LocalDateTime.of(20,
