@@ -3,13 +3,13 @@ package sqlruparse;
 import java.io.IOException;
 
 /**
- * Interface for Parser
+ * Interface DataConverter for convert from difference data to our data
  *
  * @author Денис Висков
  * @version 1.0
  * @since 19.05.2020
  */
-public interface Parser<Value, Data> {
+public interface DataConverter<Value, Data> {
 
     /**
      * Method should return value from some Data

@@ -1,11 +1,6 @@
 package sqlruparse;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,7 +13,16 @@ import java.util.List;
  * @version 1.0
  * @since 20.05.2020
  */
-public class SqlRuPostParser implements Parser<Post, Document> {
+public class SqlRuPostParser {
+
+    /**
+     * Converter
+     */
+    private final DataConverter converter;
+
+    public SqlRuPostParser(DataConverter converter) {
+        this.converter = converter;
+    }
 
     /**
      * Method has realizes parsing one post by given document
@@ -27,13 +31,13 @@ public class SqlRuPostParser implements Parser<Post, Document> {
      * @return - Post
      * @throws IOException
      */
-    @Override
-    public Post getData(Document someData) throws IOException {
+    public Post getData(String someData) throws IOException {
         TimeConversion conversion = new TimeConversion();
-        String url = someData.location();
-        String description = getDescription(someData);
-        LocalDateTime time = conversion.toDateChanger(List.of(getDate(someData))).get(0);
-        String name = getName(someData);
+        Document document = (Document) converter.getData(someData);
+        String url = document.location();
+        String description = getDescription(document);
+        LocalDateTime time = conversion.toDateChanger(List.of(getDate(document))).get(0);
+        String name = getName(document);
         return new Post(url, name, description, time);
     }
 

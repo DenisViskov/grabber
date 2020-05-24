@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -30,11 +31,9 @@ public class SqlRuPostParserTest {
 
     @Test
     public void getDataTest() throws IOException {
-        Post expected = new Post(Paths
-                .get("PostTest.html")
-                .toAbsolutePath()
-                .toString()
-                .replaceAll("\\\\", "/"),
+        DataConverter converter = Mockito.mock(DataConverter.class);
+        Mockito.when(converter.getData(Mockito.any())).thenReturn(document);
+        Post expected = new Post(document.location(),
                 "Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т.",
                 Files.readString(Paths.get("./src/test/resources/DescriptionPostTest.txt")),
                 LocalDateTime.of(20,
@@ -42,11 +41,8 @@ public class SqlRuPostParserTest {
                         13,
                         21,
                         58));
-        SqlRuPostParser parser = new SqlRuPostParser();
-        Post out = parser.getData(document);
-        assertThat(out.getName(), is(expected.getName()));
-        assertThat(out.getUrl(), containsString(expected.getUrl()));
-        assertThat(out.getCreated(), is(expected.getCreated()));
-        assertThat(out.getDescription(), is(expected.getDescription()));
+        SqlRuPostParser parser = new SqlRuPostParser(converter);
+        Post out = parser.getData("./src/test/resources/DescriptionPostTest.txt");
+        assertThat(out, is(expected));
     }
 }
