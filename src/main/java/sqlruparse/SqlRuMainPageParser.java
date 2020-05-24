@@ -1,6 +1,5 @@
 package sqlruparse;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
@@ -18,17 +17,26 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 17.05.2020
  */
-public class SqlRuParser implements DataConverter<Document, String>, Parse {
+public class SqlRuMainPageParser implements Parse {
 
     /**
      * Logger
      */
-    private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(SqlRuMainPageParser.class.getName());
+
+    /**
+     * Data converter
+     */
+    private final DataConverter dataConverter;
+
+    public SqlRuMainPageParser(DataConverter dataConverter) {
+        this.dataConverter = dataConverter;
+    }
 
     public static void main(String[] args) throws IOException {
         //ProxyChanger.useThroughProxy();
-        SqlRuParser parser = new SqlRuParser();
-        Document doc = parser.getData("https://www.sql.ru/forum/job-offers");
+        SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
+        Document doc = (Document) parser.dataConverter.getData("https://www.sql.ru/forum/job-offers");
         for (String result : parser.parseGivenCountPages(5, "https://www.sql.ru/forum/job-offers")) {
             System.out.println(result);
         }
@@ -98,23 +106,6 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
     }
 
     /**
-     * Method given data and returns Document HTML from target page
-     *
-     * @param someData - someData
-     * @return - document
-     * @throws IOException
-     */
-    @Override
-    public Document getData(String someData) throws IOException {
-        try {
-            return Jsoup.connect(someData).get();
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
-            throw new IOException();
-        }
-    }
-
-    /**
      * Method parsing web pages by given count number
      *
      * @param number - count
@@ -125,7 +116,7 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
         List<String> result = new ArrayList<>();
         String page = url + "/";
         for (int i = 1; i != number; i++) {
-            Document document = getData(page + i);
+            Document document = (Document) dataConverter.getData(page + i);
             result.addAll(finalBuilder(document));
         }
         return result;
@@ -133,12 +124,12 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
 
     @Override
     public List<Post> list(String link) throws IOException {
-        Document document = getData(link);
-        SqlRuPostParser parser = new SqlRuPostParser();
+        Document document = (Document) dataConverter.getData(link);
+        SqlRuPostParser parser = new SqlRuPostParser(dataConverter);
         List<String> urls = getUrls(document);
         List<Post> result = new ArrayList<>();
         for (String page : urls) {
-            Post post = parser.getData(getData(page));
+            Post post = parser.getData(link);
             result.add(post);
         }
         return result;
@@ -146,8 +137,8 @@ public class SqlRuParser implements DataConverter<Document, String>, Parse {
 
     @Override
     public Post detail(String link) throws IOException {
-        Document document = getData(link);
-        SqlRuPostParser parser = new SqlRuPostParser();
-        return parser.getData(document);
+        Document document = (Document) dataConverter.getData(link);
+        SqlRuPostParser parser = new SqlRuPostParser(dataConverter);
+        return parser.getData(link);
     }
 }
