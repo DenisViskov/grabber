@@ -60,7 +60,7 @@ public class SqlRuMainPageParserTest {
     @Test
     public void listTest() throws IOException {
         SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
-        List<Post> out = parser.list("./src/test/resources/Test.html");
+        List<Post> out = parser.list(Paths.get("./src/test/resources/Test.html").toAbsolutePath().toString());
         assertThat(3, is(out.size()));
     }
 
