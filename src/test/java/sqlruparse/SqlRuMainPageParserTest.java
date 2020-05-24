@@ -5,6 +5,8 @@ import org.jsoup.nodes.Document;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,12 +61,21 @@ public class SqlRuMainPageParserTest {
 
     @Test
     public void listTest() throws IOException {
-        SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
-        DataConverter converter = Mockito.mock(DataConverter.class);
+        DataConverter converter = Mockito.mock(StringConverter.class);
+        SqlRuMainPageParser parser = new SqlRuMainPageParser(converter);
         Document document = Jsoup
-                .parse(new File(Paths.get("./src/test/resources/Test.html")
+                .parse(new File(Paths.get("./src/test/resources/PostTest.html")
                         .toAbsolutePath().toString()), "windows-1251");
-        Mockito.when(converter.getData(Mockito.any())).thenReturn(document);
+        Mockito.when(converter.getData(Mockito.any())).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                Object[] args = invocationOnMock.getArguments();
+                if (args[0].toString().matches("http.+")) {
+                    return document;
+                }
+                return invocationOnMock.callRealMethod();
+            }
+        });
         List<Post> out = parser.list(Paths.get("./src/test/resources/Test.html").toAbsolutePath().toString());
         assertThat(3, is(out.size()));
     }
