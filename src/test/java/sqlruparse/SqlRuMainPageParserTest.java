@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,5 +52,32 @@ public class SqlRuMainPageParserTest {
                         + System.lineSeparator()
         );
         assertThat(expected, is(out));
+    }
+
+
+    @Test
+    public void listTest() throws IOException {
+        SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
+        List<Post> out = parser.list("./src/test/resources/Test.html");
+        assertThat(3, is(out.size()));
+    }
+
+    @Test
+    public void detailTest() throws IOException {
+        SqlRuMainPageParser parser = new SqlRuMainPageParser(new StringConverter());
+        Post expected = new Post(Paths
+                .get("PostTest.html")
+                .toAbsolutePath()
+                .toString()
+                .replaceAll("\\\\", "/"),
+                "Лиды BE/FE/senior cистемные аналитики/QA и DevOps, Москва, до 200т.",
+                Files.readString(Paths.get("./src/test/resources/DescriptionPostTest.txt")),
+                LocalDateTime.of(20,
+                        5,
+                        13,
+                        21,
+                        58));
+        Post out = parser.detail(expected.getUrl());
+        assertThat(out, is(expected));
     }
 }

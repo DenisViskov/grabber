@@ -129,7 +129,7 @@ public class SqlRuMainPageParser implements Parse {
         List<String> urls = getUrls(document);
         List<Post> result = new ArrayList<>();
         for (String page : urls) {
-            Post post = parser.getData(link);
+            Post post = parser.getData(page);
             result.add(post);
         }
         return result;
@@ -137,7 +137,6 @@ public class SqlRuMainPageParser implements Parse {
 
     @Override
     public Post detail(String link) throws IOException {
-        Document document = (Document) dataConverter.getData(link);
         SqlRuPostParser parser = new SqlRuPostParser(dataConverter);
         return parser.getData(link);
     }
