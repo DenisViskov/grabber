@@ -15,7 +15,7 @@ public interface Store {
      *
      * @param post - post
      */
-    void save(Post post);
+    boolean save(Post post);
 
     /**
      * Method should return all element from storage
