@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 /**
- * Класс реализует ...
+ * Class has realizes storage for Post
  *
  * @author Денис Висков
  * @version 1.0
@@ -18,8 +18,14 @@ import java.util.Properties;
  */
 public class PsqlStore implements Store, AutoCloseable {
 
+    /**
+     * Connection
+     */
     private Connection cnn;
 
+    /**
+     * Logger
+     */
     private final static Logger LOG = LoggerFactory.getLogger(PsqlStore.class);
 
     public PsqlStore(Properties cfg) {
@@ -37,6 +43,12 @@ public class PsqlStore implements Store, AutoCloseable {
         this.cnn = cnn;
     }
 
+    /**
+     * Method saves post to storage
+     *
+     * @param post - post
+     * @return - true or false in dependency of result
+     */
     @Override
     public boolean save(Post post) {
         boolean result = false;
@@ -52,6 +64,11 @@ public class PsqlStore implements Store, AutoCloseable {
         return result;
     }
 
+    /**
+     * Method returns all posts from storage
+     *
+     * @return - list of posts
+     */
     @Override
     public List<Post> getAll() {
         List<Post> result = new ArrayList<>();
@@ -70,6 +87,12 @@ public class PsqlStore implements Store, AutoCloseable {
         return result;
     }
 
+    /**
+     * Method looking for post by given id
+     *
+     * @param id - id
+     * @return - Post
+     */
     public Post findById(String id) {
         Post result = null;
         try (PreparedStatement statement = cnn.prepareStatement("select * from post where id=?")) {
@@ -90,6 +113,11 @@ public class PsqlStore implements Store, AutoCloseable {
         return result;
     }
 
+    /**
+     * Override method from AutoClosable interface
+     *
+     * @throws Exception
+     */
     @Override
     public void close() throws Exception {
         if (cnn != null) {
