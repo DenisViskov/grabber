@@ -92,6 +92,6 @@ public class PsqlStoreTest {
         doThrow(SQLException.class).when(connection).prepareStatement(anyString());
         PsqlStore store = new PsqlStore(connection);
         Post out = store.findById("1");
-        assertThat(out, is(isNull()));
+        assertNull(out);
     }
 }
