@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sqlruparse.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -127,6 +126,32 @@ public class Grabber implements Grab {
         }
     }
 
+    /**
+     * Method print data from DB on the browser
+     *
+     * @param store - storage
+     */
+    public void web(Store store) {
+        new Thread(() -> {
+            try (ServerSocket server = new ServerSocket(Integer.parseInt(cfg.getProperty("port")))) {
+                while (!server.isClosed()) {
+                    Socket socket = server.accept();
+                    try (OutputStream out = socket.getOutputStream()) {
+                        out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+                        for (Post post : store.getAll()) {
+                            out.write(post.toString().getBytes("Cp1251"));
+                            out.write(System.lineSeparator().getBytes());
+                        }
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     public Properties getCfg() {
         return cfg;
     }
@@ -138,6 +163,7 @@ public class Grabber implements Grab {
         Scheduler scheduler = grab.scheduler();
         Store store = grab.storeIn(new PsqlStore(grab.getCfg()));
         grab.init(new SqlRuMainPageParser(new StringConverter()), store, scheduler);
+        grab.web(store);
     }
 }
 
