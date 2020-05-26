@@ -99,4 +99,26 @@ public class SqlRuMainPageParserTest {
         Post out = parser.detail(expected.getUrl());
         assertThat(out, is(expected));
     }
+
+    @Test
+    public void filterTest() {
+        List<Post> input = List.of(new Post("",
+                        "java,sdggasdf,sdfasf",
+                        "",
+                        LocalDateTime.now()),
+                new Post("",
+                        "c++,sfgsh,sdfgadgfhj",
+                        "", LocalDateTime.now()),
+                new Post("",
+                        "Python,asfgdfg",
+                        "",
+                        LocalDateTime.now()));
+        List<Post> expected = List.of(new Post("",
+                "java,sdggasdf,sdfasf",
+                "",
+                LocalDateTime.now()));
+        SqlRuMainPageParser parser = new SqlRuMainPageParser(null);
+        List<Post> out = parser.filter(post -> post.getName().contains("java"), input);
+        assertThat(out.toString(), is(expected.toString()));
+    }
 }

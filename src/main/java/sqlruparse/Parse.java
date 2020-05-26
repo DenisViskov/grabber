@@ -2,6 +2,7 @@ package sqlruparse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Interface for parsing
@@ -27,4 +28,13 @@ public interface Parse {
      * @return - Post
      */
     Post detail(String link) throws IOException;
+
+    /**
+     * Method should filtering given posts
+     *
+     * @param filter - filter
+     * @param list   - list of posts
+     * @return - List of filtered posts
+     */
+    List<Post> filter(Predicate<Post> filter, List<Post> list);
 }
