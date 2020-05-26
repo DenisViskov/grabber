@@ -163,6 +163,7 @@ public class SqlRuMainPageParser implements Parse {
      * @param list   - list of posts
      * @return - List of filtered posts
      */
+    @Override
     public List<Post> filter(Predicate<Post> filter, List<Post> list) {
         return list.stream()
                 .filter(filter)

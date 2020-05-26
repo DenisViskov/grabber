@@ -117,7 +117,9 @@ public class Grabber implements Grab {
             Store store = (Store) map.get("store");
             Parse parse = (Parse) map.get("parse");
             try {
-                parse.list("https://www.sql.ru/forum/job-offers")
+                parse.filter(post -> post.getName().contains("java")
+                                || post.getName().contains("Java"),
+                        parse.list("https://www.sql.ru/forum/job-offers"))
                         .forEach(post -> store.save(post));
             } catch (IOException e) {
                 LOG.error(e.getMessage(), e);

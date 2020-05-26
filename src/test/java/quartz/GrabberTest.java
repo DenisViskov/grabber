@@ -68,8 +68,8 @@ public class GrabberTest {
         map.put("store", store);
         when(context.getJobDetail()).thenReturn(detail);
         when(detail.getJobDataMap()).thenReturn(map);
-        when(parse.list(anyString())).thenReturn(List.of(new Post("",
-                "",
+        when(parse.filter(any(), any())).thenReturn(List.of(new Post("",
+                "java",
                 "",
                 LocalDateTime.now())));
         job.execute(context);
