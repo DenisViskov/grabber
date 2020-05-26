@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.*;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -153,5 +154,18 @@ public class SqlRuMainPageParser implements Parse {
     public Post detail(String link) throws IOException {
         SqlRuPostParser parser = new SqlRuPostParser(dataConverter);
         return parser.getData(link);
+    }
+
+    /**
+     * Method realizes filter for posts
+     *
+     * @param filter - predicate
+     * @param list   - list of posts
+     * @return - List of filtered posts
+     */
+    public List<Post> filter(Predicate<Post> filter, List<Post> list) {
+        return list.stream()
+                .filter(filter)
+                .collect(Collectors.toList());
     }
 }
