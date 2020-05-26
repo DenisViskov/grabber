@@ -5,11 +5,9 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.image.CropImageFilter;
 import java.io.IOException;
 import java.time.*;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -138,8 +136,8 @@ public class SqlRuMainPageParser implements Parse {
         List<String> urls = getUrls(document);
         List<Post> result = new ArrayList<>();
         for (String page : urls) {
-            Optional<Post> post = Optional.ofNullable(detail(page));
-            post.ifPresent(result::add);
+            Post post = parser.getData(page);
+            result.add(post);
         }
         return result;
     }
@@ -154,21 +152,6 @@ public class SqlRuMainPageParser implements Parse {
     @Override
     public Post detail(String link) throws IOException {
         SqlRuPostParser parser = new SqlRuPostParser(dataConverter);
-        Post post = parser.getData(link);
-        if (isJob(post, "java")) {
-            return post;
-        }
-        return null;
-    }
-
-    /**
-     * Method check post on contain job
-     *
-     * @param post - post
-     * @param job  - job
-     * @return - true or false in dependency of result
-     */
-    private boolean isJob(Post post, String job) {
-        return post.getName().contains(job);
+        return parser.getData(link);
     }
 }
