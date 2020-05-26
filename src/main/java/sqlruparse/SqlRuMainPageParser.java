@@ -122,6 +122,13 @@ public class SqlRuMainPageParser implements Parse {
         return result;
     }
 
+    /**
+     * Method of parsing posts from given link
+     *
+     * @param link - url
+     * @return - list of posts
+     * @throws IOException
+     */
     @Override
     public List<Post> list(String link) throws IOException {
         Document document = (Document) dataConverter.getData(link);
@@ -135,6 +142,13 @@ public class SqlRuMainPageParser implements Parse {
         return result;
     }
 
+    /**
+     * Method returns detail post from given link
+     *
+     * @param link - url
+     * @return - Post
+     * @throws IOException
+     */
     @Override
     public Post detail(String link) throws IOException {
         SqlRuPostParser parser = new SqlRuPostParser(dataConverter);
