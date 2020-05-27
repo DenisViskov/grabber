@@ -31,14 +31,6 @@ public class GrabberTest {
     }
 
     @Test
-    public void cfgTest() throws IOException {
-        Grabber grabber = new Grabber();
-        grabber.cfg(Paths.get("./src/main/resources/rabbit.properties"));
-        String out = grabber.getCfg().getProperty("username");
-        assertThat(out, is("postgres"));
-    }
-
-    @Test
     public void schedulerTest() throws SchedulerException {
         Grabber grabber = new Grabber();
         Scheduler scheduler = grabber.scheduler();
@@ -48,7 +40,7 @@ public class GrabberTest {
     @Test
     public void initTest() throws SchedulerException, IOException {
         Grabber grabber = new Grabber();
-        grabber.cfg(Paths.get("./src/main/resources/rabbit.properties"));
+        grabber.cfg();
         Parse parse = mock(Parse.class);
         Store store = mock(Store.class);
         Scheduler scheduler = mock(Scheduler.class);

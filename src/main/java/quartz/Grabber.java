@@ -50,13 +50,12 @@ public class Grabber implements Grab {
     /**
      * Method execute initialize configuration properties from given path
      *
-     * @param path - path
      * @throws IOException
      */
-    public void cfg(Path path) throws IOException {
-        try (InputStream in = new FileInputStream(new File(path
-                .toAbsolutePath()
-                .toString()))) {
+    public void cfg() throws IOException {
+        try (InputStream in = Grabber.class
+                .getClassLoader()
+                .getResourceAsStream("rabbit.properties")) {
             cfg.load(in);
         }
     }
@@ -152,16 +151,12 @@ public class Grabber implements Grab {
         }).start();
     }
 
-    public Properties getCfg() {
-        return cfg;
-    }
-
     public static void main(String[] args) throws Exception {
-        ProxyChanger.useThroughProxy();
+        //ProxyChanger.useThroughProxy();
         Grabber grab = new Grabber();
-        grab.cfg(Paths.get("./src/main/resources/rabbit.properties"));
+        grab.cfg();
         Scheduler scheduler = grab.scheduler();
-        Store store = grab.storeIn(new PsqlStore(grab.getCfg()));
+        Store store = grab.storeIn(new PsqlStore(grab.cfg));
         grab.init(new SqlRuMainPageParser(new StringConverter()), store, scheduler);
         grab.web(store);
     }
